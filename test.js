@@ -7,7 +7,6 @@ const wss_provider = new ethers.providers.WebSocketProvider(
 );
 
 const initMain = async () => {
-  console.log("launched");
   const currentBalance = await wss_provider.getBalance(MY_WALLET);
   console.log("CURRENT =>", ethers.utils.formatEther(currentBalance));
 
