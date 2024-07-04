@@ -1,7 +1,7 @@
 const ethers = require("ethers");
 const { WSS_ENDPOINT, MY_WALLET } = require("./config/constants");
-const { formatEther } = require("viem");
-const { bscTestnet } = require("viem/chains");
+// const { formatEther } = require("viem");
+// const { bscTestnet } = require("viem/chains");
 
 const network = 97;
 const wss_provider = new ethers.providers.WebSocketProvider(
@@ -20,7 +20,10 @@ const initMain = async () => {
           if (transaction && transaction.to === MY_WALLET) {
             // console.log({ transaction });
             // console.log("ethers.utils.hexlify =>", String(transaction.value));
-            console.log("value =>", formatEther(transaction.value));
+            console.log(
+              "value =>",
+              ethers.utils.formatEther(transaction.value)
+            );
             wss_provider.once(transaction.hash, (tx) => {
               console.log("mined tx =>", tx);
             });
