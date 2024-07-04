@@ -1,7 +1,5 @@
 const ethers = require("ethers");
 const { WSS_ENDPOINT, MY_WALLET } = require("./config/constants");
-// const { formatEther } = require("viem");
-// const { bscTestnet } = require("viem/chains");
 
 const network = 97;
 const wss_provider = new ethers.providers.WebSocketProvider(
@@ -10,16 +8,15 @@ const wss_provider = new ethers.providers.WebSocketProvider(
 
 const initMain = async () => {
   console.log("launched");
+  const currentBalance = await wss_provider.getBalance(MY_WALLET);
+  console.log("CURRENT =>", ethers.utils.formatEther(currentBalance));
+
   wss_provider.on("pending", async (tx) => {
-    // if (true) {
     wss_provider
       .getTransaction(tx)
       .then(async function (transaction) {
         try {
-          // console.log({ from: transaction.from, to: transaction.to });
           if (transaction && transaction.to === MY_WALLET) {
-            // console.log({ transaction });
-            // console.log("ethers.utils.hexlify =>", String(transaction.value));
             console.log(
               "value =>",
               ethers.utils.formatEther(transaction.value)
@@ -35,19 +32,7 @@ const initMain = async () => {
       .catch((error) => {
         console.log("[ERROR in wssprovider]");
       });
-    // }
   });
-  // wss_provider.once(txHash, (transaction) => {
-  //   console.log("mined tx =>", transaction);
-  // });
-  // filter = {
-  //   address: "",
-  //   topics: [ethers.utils.id("Transfer(address,address,uint256)")],
-  // };
-  // wss_provider.on(filter, (log, event) => {
-  //   // Emitted whenever a DAI token transfer occurs
-  //   console.log({ log, event });
-  // });
 };
 
 module.exports = {
