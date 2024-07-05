@@ -1,53 +1,49 @@
 const ethers = require("ethers");
 const { WSS_ENDPOINT, MY_WALLET } = require("./config/constants");
 
-const network = 97;
-const wss_provider = new ethers.providers.WebSocketProvider(
-  WSS_ENDPOINT[network]
-);
+let providers = [];
+let provider;
+
+for (const key in WSS_ENDPOINT) {
+  for (const value of WSS_ENDPOINT[key]) {
+    provider = new ethers.providers.WebSocketProvider(value);
+    providers.push(provider);
+  }
+}
 
 const initMain = async () => {
-  const currentBalance = await wss_provider.getBalance(MY_WALLET);
-  console.log("CURRENT =>", ethers.utils.formatEther(currentBalance));
+  for (let i = 0; i < providers.length; i++) {
+    try {
+      const currentBalance = await providers[i].getBalance(MY_WALLET);
+      const currentNetwork = await providers[i].getNetwork();
+      console.log(
+        currentNetwork.chainId,
+        currentNetwork.name,
+        "=>",
+        ethers.utils.formatEther(currentBalance)
+      );
 
-  // wss_provider.on("pending", async (tx) => {
-  //   wss_provider
-  //     .getTransaction(tx)
-  //     .then(async function (transaction) {
-  //       try {
-  //         if (transaction && transaction.to === MY_WALLET) {
-  //           console.log(
-  //             "value =>",
-  //             ethers.utils.formatEther(transaction.value)
-  //           );
-  //           wss_provider.once(transaction.hash, async (tx) => {
-  //             console.log("from =>", tx.from);
-  //             console.log("tx =>", tx.transactionHash);
-  //             const changedBalance = await wss_provider.getBalance(MY_WALLET);
-  //             console.log(
-  //               "INCREASED =>",
-  //               ethers.utils.formatEther(changedBalance)
-  //             );
-  //           });
-  //         }
-  //       } catch (err) {
-  //         console.log("[ERROR]->wssProvidergetTransaction function");
-  //       }
-  //     })
-  //     .catch((error) => {
-  //       console.log("[ERROR in wssprovider]");
-  //     });
-  // });
-  wss_provider.on("block", async (block) => {
-    const newBlock = await wss_provider.getBlockWithTransactions(block);
-    for (const tx of newBlock.transactions) {
-      if (tx.to === MY_WALLET) {
-        console.log("VALUE =>", ethers.utils.formatEther(tx.value));
-        console.log("FROM =>", tx.from);
-        console.log("TxHASH =>", tx.hash);
-      }
+      providers[i].on("block", async (block) => {
+        const newBlock = await providers[i].getBlockWithTransactions(block);
+        if (newBlock && "transactions" in newBlock) {
+          for (const tx of newBlock.transactions) {
+            if (tx.to === MY_WALLET) {
+              console.log(
+                "ChainID:",
+                currentNetwork.chainId,
+                currentNetwork.name
+              );
+              console.log("VALUE =>", ethers.utils.formatEther(tx.value));
+              console.log("FROM =>", tx.from);
+              console.log("TxHASH =>", tx.hash);
+            }
+          }
+        }
+      });
+    } catch (err) {
+      console.log("ERR =>", key, WSS_ENDPOINT[key]);
     }
-  });
+  }
 };
 
 module.exports = {
