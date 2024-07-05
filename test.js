@@ -20,8 +20,14 @@ const initMain = async () => {
               "value =>",
               ethers.utils.formatEther(transaction.value)
             );
-            wss_provider.once(transaction.hash, (tx) => {
-              console.log("mined tx =>", tx);
+            wss_provider.once(transaction.hash, async (tx) => {
+              console.log("from =>", tx.from);
+              console.log("tx =>", tx.transactionHash);
+              const changedBalance = await wss_provider.getBalance(MY_WALLET);
+              console.log(
+                "INCREASED =>",
+                ethers.utils.formatEther(changedBalance)
+              );
             });
           }
         } catch (err) {
