@@ -1,3 +1,8 @@
-const { initMain } = require("./test");
+const { initMain } = require("./main");
+const { initTest } = require("./test");
 
-initMain();
+if (process.env.NETWORK_MODE == "testnet") {
+  initTest();
+} else {
+  initMain();
+}
