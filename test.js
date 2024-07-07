@@ -1,5 +1,6 @@
 const ethers = require("ethers");
 const { WSS_ENDPOINT, MY_WALLET } = require("./config/constants");
+const abi = require("./abi/bsc-usdt.json");
 
 let providers = [];
 let provider;
@@ -40,8 +41,21 @@ const initMain = async () => {
           }
         }
       });
+
+      // if (i === 7) {
+      //   const address = "0x337610d27c682E347C9cD60BD4b3b107C9d34dDd";
+      //   const contract = new ethers.Contract(address, abi, providers[i]);
+      //   contract.on("Transfer", (from, to, value, event) => {
+      //     console.log({
+      //       from: from,
+      //       to: to,
+      //       value: value.toString(),
+      //       data: event,
+      //     });
+      //   });
+      // }
     } catch (err) {
-      console.log("ERR =>", key, WSS_ENDPOINT[key]);
+      console.log("ERR =>", err);
     }
   }
 };
