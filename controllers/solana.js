@@ -1,19 +1,21 @@
 const web3 = require("@solana/web3.js");
-const { MY_WALLET_SOL } = require("./config/constants");
+const { MY_WALLET_SOL } = require("../config/constants");
 
 const connection = new web3.Connection(web3.clusterApiUrl("devnet"));
 const publicKey = new web3.PublicKey(MY_WALLET_SOL);
-let currentBalance;
 
-const solTest = async () => {
+const solListener = async () => {
   try {
-    currentBalance = await connection.getBalance(publicKey);
-    console.log("CURRENT =>", currentBalance / web3.LAMPORTS_PER_SOL, "SOL");
+    const currentBalance = await connection.getBalance(publicKey);
+    console.log(901, "SolanaDevnet =>", currentBalance / web3.LAMPORTS_PER_SOL);
 
     connection.onAccountChange(
       publicKey,
       async (accountInfo, context) => {
         if (accountInfo.lamports > currentBalance) {
+          console.log(
+            "--------------------------------------------------------------------"
+          );
           console.log(
             "CHANGED TO =>",
             accountInfo.lamports / web3.LAMPORTS_PER_SOL
@@ -53,4 +55,4 @@ const solTest = async () => {
   }
 };
 
-solTest();
+module.exports = solListener;

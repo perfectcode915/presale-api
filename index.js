@@ -1,3 +1,6 @@
-const { initMain } = require("./test");
+const ethListener = require("./controllers/ethereum");
+const solListener = require("./controllers/solana");
 
-initMain();
+ethListener();
+
+solListener();

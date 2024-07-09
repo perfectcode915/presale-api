@@ -3,8 +3,8 @@ const {
   WSS_ENDPOINT,
   MY_WALLET,
   TOKEN_CONTRACT,
-} = require("./config/constants");
-const abi = require("./abi/bsc-usdt.json");
+} = require("../config/constants");
+const abi = require("../abi/bsc-usdt.json");
 
 let providers = [];
 let provider;
@@ -16,9 +16,9 @@ for (const key in WSS_ENDPOINT) {
   }
 }
 
-const contract = new ethers.Contract(TOKEN_CONTRACT, abi, providers[8]);
+const contract = new ethers.Contract(TOKEN_CONTRACT, abi, providers[3]);
 
-const initMain = async () => {
+const ethListener = async () => {
   for (let i = 0; i < providers.length; i++) {
     try {
       const currentBalance = await providers[i].getBalance(MY_WALLET);
@@ -35,6 +35,9 @@ const initMain = async () => {
         if (newBlock && "transactions" in newBlock) {
           for (const tx of newBlock.transactions) {
             if (tx.to === MY_WALLET) {
+              console.log(
+                "--------------------------------------------------------------------"
+              );
               console.log(
                 "ChainID:",
                 currentNetwork.chainId,
@@ -54,6 +57,9 @@ const initMain = async () => {
 
   contract.on("Transfer", (from, to, value, event) => {
     if (to === MY_WALLET) {
+      console.log(
+        "--------------------------------------------------------------------"
+      );
       console.log("BSCTESTNET USDT");
       console.log("VALUE =>", ethers.utils.formatEther(value));
       console.log("FROM =>", from);
@@ -62,6 +68,4 @@ const initMain = async () => {
   });
 };
 
-module.exports = {
-  initMain,
-};
+module.exports = ethListener;
