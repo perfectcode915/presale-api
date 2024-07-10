@@ -1,8 +1,8 @@
 const web3 = require("@solana/web3.js");
-const { MY_WALLET_SOL } = require("../config/constants");
+const { WALLET_ADDRESS } = require("../config/constants");
 
 const connection = new web3.Connection(web3.clusterApiUrl("devnet"));
-const publicKey = new web3.PublicKey(MY_WALLET_SOL);
+const publicKey = new web3.PublicKey(WALLET_ADDRESS.SOL);
 
 let currentBalance;
 
