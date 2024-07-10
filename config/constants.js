@@ -343,7 +343,10 @@ const WALLET_ADDRESS = {
   TRON: "TXiBhGeTnSQZrHDF36TssWyGCcDR24gzA3",
 };
 
+const TRON_TEST = true;
+
 module.exports = {
   CHAINS,
   WALLET_ADDRESS,
+  TRON_TEST,
 };

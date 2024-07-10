@@ -1,14 +1,20 @@
 const TronWeb = require("tronweb");
-const { WALLET_ADDRESS } = require("../config/constants");
+const { WALLET_ADDRESS, CHAINS, TRON_TEST } = require("../config/constants");
 
+const param = TRON_TEST ? 1 : 0;
 const tronWeb = new TronWeb({
-  fullHost: "https://nile.trongrid.io",
-  // privateKey: PRIVATE_TRON,
+  fullHost: CHAINS.TRON[param].endpoint,
 });
 
 const tronListener = async () => {
   const balance = await tronWeb.trx.getBalance(WALLET_ADDRESS.TRON);
-  console.log(1001, "TTRON =>", tronWeb.fromSun(balance));
+  console.log(
+    CHAINS.TRON[param].id,
+    CHAINS.TRON[param].name,
+    "=>",
+    tronWeb.fromSun(balance),
+    CHAINS.TRON[param].symbol
+  );
 
   setInterval(async () => {
     const currentBlock = await tronWeb.trx.getCurrentBlock();
@@ -28,13 +34,21 @@ const tronListener = async () => {
             console.log(
               "--------------------------------------------------------------------"
             );
-            console.log("TTRON TRX");
+            console.log(
+              "ChainID:",
+              CHAINS.TRON[param].id,
+              CHAINS.TRON[param].name
+            );
             console.log("TxHASH =>", transactions[i].txID);
             console.log(
               "FROM =>",
               tronWeb.address.fromHex(txInformation.owner_address)
             );
-            console.log("VALUE =>", tronWeb.fromSun(txInformation.amount));
+            console.log(
+              "VALUE =>",
+              tronWeb.fromSun(txInformation.amount),
+              CHAINS.TRON[param].symbol
+            );
           }
         }
       }
