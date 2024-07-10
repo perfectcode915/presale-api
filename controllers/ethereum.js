@@ -69,7 +69,6 @@ const ethListener = async () => {
       WALLET_ADDRESS.EVM
     );
     console.log(
-      "ChainID",
       contractInfo[i].chainId,
       contractInfo[i].chainName,
       "=>",
@@ -81,7 +80,11 @@ const ethListener = async () => {
         console.log(
           "--------------------------------------------------------------------"
         );
-        console.log(contractInfo[i].chainId, contractInfo[i].contractName);
+        console.log(
+          "ChainID",
+          contractInfo[i].chainId,
+          contractInfo[i].contractName
+        );
         console.log("TxHASH =>", event.transactionHash);
         console.log("FROM =>", from);
         console.log(

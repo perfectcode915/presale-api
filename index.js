@@ -1,5 +1,5 @@
 const ethListener = require("./controllers/ethereum");
-// const solListener = require("./controllers/solana");
+const solListener = require("./controllers/solana");
 // const tronListener = require("./controllers/tron");
 
 console.log(
@@ -8,6 +8,6 @@ console.log(
 
 ethListener();
 
-// solListener();
+solListener();
 
 // tronListener();
