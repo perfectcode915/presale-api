@@ -15,7 +15,7 @@ const CHAINS = {
       name: "Solana",
       symbol: "SOL",
       endpoint: "",
-      contracts: [],
+      tokens: [],
     },
     TRON: {
       id: 1000,
@@ -351,7 +351,12 @@ const CHAINS = {
       name: "Solana Devnet",
       symbol: "DSOL",
       endpoint: "",
-      contracts: [],
+      tokens: [
+        {
+          address: "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr",
+          name: "USDC-Dev",
+        },
+      ],
     },
     TRON: {
       id: 1001,

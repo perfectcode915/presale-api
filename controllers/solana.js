@@ -1,7 +1,10 @@
 const web3 = require("@solana/web3.js");
+const solToken = require("@solana/spl-token");
 const { WALLET_ADDRESS, CHAINS, TEST_MODE } = require("../config/constants");
 
-let currentBalance, signatures;
+let currentBalance,
+  signatures,
+  mintAddresses = [];
 
 const chain = TEST_MODE ? CHAINS.testnet.SOL : CHAINS.mainnet.SOL;
 const connection = new web3.Connection(
@@ -9,6 +12,10 @@ const connection = new web3.Connection(
 );
 
 const publicKey = new web3.PublicKey(WALLET_ADDRESS.SOL);
+
+for (const solToken of chain.tokens) {
+  mintAddresses.push(new web3.PublicKey(solToken.address));
+}
 
 const solListener = async () => {
   try {
@@ -20,6 +27,32 @@ const solListener = async () => {
       currentBalance / web3.LAMPORTS_PER_SOL,
       chain.symbol
     );
+
+    for (let i = 0; i < chain.tokens.length; i++) {
+      const associatedTokenAddress = await solToken.getAssociatedTokenAddress(
+        mintAddresses[i],
+        publicKey
+      );
+      const accountInfo = await connection.getParsedTokenAccountsByOwner(
+        publicKey,
+        { mint: mintAddresses[i] }
+      );
+      const tokenAccount = accountInfo.value.find(
+        (account) =>
+          account.pubkey.toBase58() === associatedTokenAddress.toBase58()
+      );
+      if (tokenAccount) {
+        const tokenBalance =
+          tokenAccount.account.data.parsed.info.tokenAmount.uiAmount;
+        console.log(
+          chain.id,
+          chain.name,
+          "=>",
+          tokenBalance,
+          chain.tokens[i].name
+        );
+      }
+    }
 
     connection.onAccountChange(
       publicKey,
@@ -66,6 +99,53 @@ const solListener = async () => {
             }
           }
         }
+      },
+      "confirmed"
+    );
+
+    const TOKEN_PROGRAM_ID = new web3.PublicKey(
+      "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+    );
+    const TRANSFER_SIGNATURE = "Program log: Instruction: TransferChecked";
+    connection.onLogs(
+      TOKEN_PROGRAM_ID,
+      async (logs, context) => {
+        if (
+          logs.signature !==
+          "1111111111111111111111111111111111111111111111111111111111111111"
+        )
+          for (const log of logs.logs) {
+            if (log.includes(TRANSFER_SIGNATURE)) {
+              const signature = logs.signature;
+              const transaction = await connection.getParsedTransaction(
+                signature,
+                "confirmed"
+              );
+              const { preTokenBalances, postTokenBalances } = transaction.meta;
+              if (
+                preTokenBalances[1].owner === WALLET_ADDRESS.SOL &&
+                postTokenBalances[1].owner === WALLET_ADDRESS.SOL
+              ) {
+                for (const token of chain.tokens) {
+                  if (preTokenBalances[0].mint === token.address) {
+                    console.log(
+                      "--------------------------------------------------------------------"
+                    );
+                    console.log("ChainID:", chain.id, token.name);
+                    console.log("TxHASH =>", signature);
+                    console.log("FROM =>", preTokenBalances[0].owner);
+                    console.log(
+                      "VALUE =>",
+                      postTokenBalances[1].uiTokenAmount.uiAmount -
+                        preTokenBalances[1].uiTokenAmount.uiAmount,
+                      token.name
+                    );
+                    break;
+                  }
+                }
+              }
+            }
+          }
       },
       "confirmed"
     );
