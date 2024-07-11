@@ -1,13 +1,14 @@
 const ethers = require("ethers");
-const { CHAINS, WALLET_ADDRESS } = require("../config/constants");
+const { CHAINS, WALLET_ADDRESS, TEST_MODE } = require("../config/constants");
 
 let providers = [];
 let provider;
 let contracts = [];
 let newContract;
 let contractInfo = [];
+const chains = TEST_MODE ? CHAINS["testnet"] : CHAINS["mainnet"];
 
-for (const chain of CHAINS.EVM) {
+for (const chain of chains.EVM) {
   provider = new ethers.providers.WebSocketProvider(chain.endpoint);
   providers.push(provider);
   if (chain.contracts.length > 0) {
@@ -32,11 +33,11 @@ const ethListener = async () => {
     try {
       const currentBalance = await providers[i].getBalance(WALLET_ADDRESS.EVM);
       console.log(
-        CHAINS.EVM[i].id,
-        CHAINS.EVM[i].name,
+        chains.EVM[i].id,
+        chains.EVM[i].name,
         "=>",
         ethers.utils.formatEther(currentBalance),
-        CHAINS.EVM[i].symbol
+        chains.EVM[i].symbol
       );
 
       providers[i].on("block", async (block) => {
@@ -47,13 +48,13 @@ const ethListener = async () => {
               console.log(
                 "--------------------------------------------------------------------"
               );
-              console.log("ChainID:", CHAINS.EVM[i].id, CHAINS.EVM[i].name);
+              console.log("ChainID:", chains.EVM[i].id, chains.EVM[i].name);
               console.log("TxHASH =>", tx.hash);
               console.log("FROM =>", tx.from);
               console.log(
                 "VALUE =>",
                 ethers.utils.formatEther(tx.value),
-                CHAINS.EVM[i].symbol
+                chains.EVM[i].symbol
               );
             }
           }

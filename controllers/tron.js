@@ -1,9 +1,9 @@
 const TronWeb = require("tronweb");
-const { WALLET_ADDRESS, CHAINS, TRON_TEST } = require("../config/constants");
+const { WALLET_ADDRESS, CHAINS, TEST_MODE } = require("../config/constants");
 
-const param = TRON_TEST ? 1 : 0;
+const chain = TEST_MODE ? CHAINS.testnet.TRON : CHAINS.mainnet.TRON;
 const tronWeb = new TronWeb({
-  fullHost: CHAINS.TRON[param].endpoint,
+  fullHost: chain.endpoint,
 });
 
 tronWeb.setAddress(WALLET_ADDRESS.TRON);
@@ -12,22 +12,22 @@ const tronListener = async () => {
   try {
     const balance = await tronWeb.trx.getBalance(WALLET_ADDRESS.TRON);
     console.log(
-      CHAINS.TRON[param].id,
-      CHAINS.TRON[param].name,
+      chain.id,
+      chain.name,
       "=>",
       tronWeb.fromSun(balance),
-      CHAINS.TRON[param].symbol
+      chain.symbol
     );
 
     let contract;
-    for (const c of CHAINS.TRON[param].contracts) {
+    for (const c of chain.contracts) {
       contract = await tronWeb.contract(c.abi, c.address);
       const contractBalance = await contract
         .balanceOf(WALLET_ADDRESS.TRON)
         .call();
       console.log(
-        CHAINS.TRON[param].id,
-        CHAINS.TRON[param].name,
+        chain.id,
+        chain.name,
         "=>",
         tronWeb.fromSun(contractBalance.toString()),
         c.name
@@ -52,11 +52,7 @@ const tronListener = async () => {
               console.log(
                 "--------------------------------------------------------------------"
               );
-              console.log(
-                "ChainID:",
-                CHAINS.TRON[param].id,
-                CHAINS.TRON[param].name
-              );
+              console.log("ChainID:", chain.id, chain.name);
               console.log("TxHASH =>", transactions[i].txID);
               console.log(
                 "FROM =>",
@@ -65,17 +61,17 @@ const tronListener = async () => {
               console.log(
                 "VALUE =>",
                 tronWeb.fromSun(txInformation.amount),
-                CHAINS.TRON[param].symbol
+                chain.symbol
               );
             } else if (
               txInformation.owner_address &&
               txInformation.contract_address &&
               txInformation.data
             ) {
-              for (let j = 0; j < CHAINS.TRON[param].contracts.length; j++) {
+              for (let j = 0; j < chain.contracts.length; j++) {
                 if (
                   tronWeb.address.fromHex(txInformation.contract_address) ===
-                    CHAINS.TRON[param].contracts[j].address &&
+                    chain.contracts[j].address &&
                   txInformation.data.substring(0, 8) === "a9059cbb" &&
                   tronWeb.address.fromHex(
                     "41" + txInformation.data.substring(32, 72)
@@ -84,11 +80,7 @@ const tronListener = async () => {
                   console.log(
                     "--------------------------------------------------------------------"
                   );
-                  console.log(
-                    "ChainID:",
-                    CHAINS.TRON[param].id,
-                    CHAINS.TRON[param].contracts[j].name
-                  );
+                  console.log("ChainID:", chain.id, chain.contracts[j].name);
                   console.log("TxHASH =>", transactions[i].txID);
                   console.log(
                     "FROM =>",
@@ -101,7 +93,7 @@ const tronListener = async () => {
                         .toBigNumber("0x" + txInformation.data.substring(72))
                         .toNumber()
                     ),
-                    CHAINS.TRON[param].contracts[j].name
+                    chain.contracts[j].name
                   );
                   break;
                 }
