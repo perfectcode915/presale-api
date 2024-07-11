@@ -29,7 +29,7 @@ const tronListener = async () => {
         CHAINS.TRON[param].id,
         CHAINS.TRON[param].name,
         "=>",
-        tronWeb.fromSun(tronWeb.toDecimal(contractBalance)),
+        tronWeb.fromSun(contractBalance.toString()),
         c.name
       );
     }
