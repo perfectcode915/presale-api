@@ -356,6 +356,10 @@ const CHAINS = {
           address: "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr",
           name: "USDC-Dev",
         },
+        {
+          address: "Bv1YvindiQRTjg67bBX24w4SNZoSoDRoXbi6Ww2pJj3W",
+          name: "ddd",
+        },
       ],
     },
     TRON: {

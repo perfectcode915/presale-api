@@ -133,21 +133,33 @@ const solListener = async () => {
                     postTokenBalances.length > 1
                   ) {
                     if (
-                      preTokenBalances[1].owner === WALLET_ADDRESS.SOL &&
-                      postTokenBalances[1].owner === WALLET_ADDRESS.SOL
+                      (preTokenBalances[1].owner === WALLET_ADDRESS.SOL &&
+                        postTokenBalances[1].owner === WALLET_ADDRESS.SOL) ||
+                      (preTokenBalances[0].owner === WALLET_ADDRESS.SOL &&
+                        postTokenBalances[0].owner === WALLET_ADDRESS.SOL)
                     ) {
+                      const index =
+                        preTokenBalances[1].owner === WALLET_ADDRESS.SOL &&
+                        postTokenBalances[1].owner === WALLET_ADDRESS.SOL
+                          ? 1
+                          : 0;
                       for (const token of chain.tokens) {
-                        if (preTokenBalances[0].mint === token.address) {
+                        if (
+                          preTokenBalances[1 - index].mint === token.address
+                        ) {
                           console.log(
                             "--------------------------------------------------------------------"
                           );
                           console.log("ChainID:", chain.id, token.name);
                           console.log("TxHASH =>", signature);
-                          console.log("FROM =>", preTokenBalances[0].owner);
+                          console.log(
+                            "FROM =>",
+                            preTokenBalances[1 - index].owner
+                          );
                           console.log(
                             "VALUE =>",
-                            postTokenBalances[1].uiTokenAmount.uiAmount -
-                              preTokenBalances[1].uiTokenAmount.uiAmount,
+                            postTokenBalances[index].uiTokenAmount.uiAmount -
+                              preTokenBalances[index].uiTokenAmount.uiAmount,
                             token.name
                           );
                           break;
