@@ -114,43 +114,47 @@ const solListener = async () => {
           logs.signature !==
           "1111111111111111111111111111111111111111111111111111111111111111"
         )
-          for (const log of logs.logs) {
-            if (log.includes(TRANSFER_SIGNATURE)) {
-              const signature = logs.signature;
-              const transaction = await connection.getParsedTransaction(
-                signature,
-                "confirmed"
-              );
-              if (transaction && transaction.meta) {
-                const { preTokenBalances, postTokenBalances } =
-                  transaction.meta;
-                if (preTokenBalances.length && postTokenBalances.length) {
-                  if (
-                    preTokenBalances[1].owner === WALLET_ADDRESS.SOL &&
-                    postTokenBalances[1].owner === WALLET_ADDRESS.SOL
-                  ) {
-                    for (const token of chain.tokens) {
-                      if (preTokenBalances[0].mint === token.address) {
-                        console.log(
-                          "--------------------------------------------------------------------"
-                        );
-                        console.log("ChainID:", chain.id, token.name);
-                        console.log("TxHASH =>", signature);
-                        console.log("FROM =>", preTokenBalances[0].owner);
-                        console.log(
-                          "VALUE =>",
-                          postTokenBalances[1].uiTokenAmount.uiAmount -
-                            preTokenBalances[1].uiTokenAmount.uiAmount,
-                          token.name
-                        );
-                        break;
+          try {
+            for (const log of logs.logs) {
+              if (log.includes(TRANSFER_SIGNATURE)) {
+                const signature = logs.signature;
+                const transaction = await connection.getParsedTransaction(
+                  signature,
+                  "confirmed"
+                );
+                if (transaction && transaction.meta) {
+                  const { preTokenBalances, postTokenBalances } =
+                    transaction.meta;
+                  if (preTokenBalances.length && postTokenBalances.length) {
+                    if (
+                      preTokenBalances[1].owner === WALLET_ADDRESS.SOL &&
+                      postTokenBalances[1].owner === WALLET_ADDRESS.SOL
+                    ) {
+                      for (const token of chain.tokens) {
+                        if (preTokenBalances[0].mint === token.address) {
+                          console.log(
+                            "--------------------------------------------------------------------"
+                          );
+                          console.log("ChainID:", chain.id, token.name);
+                          console.log("TxHASH =>", signature);
+                          console.log("FROM =>", preTokenBalances[0].owner);
+                          console.log(
+                            "VALUE =>",
+                            postTokenBalances[1].uiTokenAmount.uiAmount -
+                              preTokenBalances[1].uiTokenAmount.uiAmount,
+                            token.name
+                          );
+                          break;
+                        }
                       }
                     }
                   }
                 }
+                break;
               }
-              break;
             }
+          } catch (err) {
+            console.log("ERR =>", err);
           }
       },
       "confirmed"
