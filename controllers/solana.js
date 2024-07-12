@@ -120,12 +120,18 @@ const solListener = async () => {
                 const signature = logs.signature;
                 const transaction = await connection.getParsedTransaction(
                   signature,
-                  "confirmed"
+                  {
+                    commitment: "confirmed",
+                    maxSupportedTransactionVersion: 0,
+                  }
                 );
                 if (transaction && transaction.meta) {
                   const { preTokenBalances, postTokenBalances } =
                     transaction.meta;
-                  if (preTokenBalances.length && postTokenBalances.length) {
+                  if (
+                    preTokenBalances.length > 1 &&
+                    postTokenBalances.length > 1
+                  ) {
                     if (
                       preTokenBalances[1].owner === WALLET_ADDRESS.SOL &&
                       postTokenBalances[1].owner === WALLET_ADDRESS.SOL
