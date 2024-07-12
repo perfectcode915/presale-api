@@ -121,29 +121,35 @@ const solListener = async () => {
                 signature,
                 "confirmed"
               );
-              const { preTokenBalances, postTokenBalances } = transaction.meta;
-              if (
-                preTokenBalances[1].owner === WALLET_ADDRESS.SOL &&
-                postTokenBalances[1].owner === WALLET_ADDRESS.SOL
-              ) {
-                for (const token of chain.tokens) {
-                  if (preTokenBalances[0].mint === token.address) {
-                    console.log(
-                      "--------------------------------------------------------------------"
-                    );
-                    console.log("ChainID:", chain.id, token.name);
-                    console.log("TxHASH =>", signature);
-                    console.log("FROM =>", preTokenBalances[0].owner);
-                    console.log(
-                      "VALUE =>",
-                      postTokenBalances[1].uiTokenAmount.uiAmount -
-                        preTokenBalances[1].uiTokenAmount.uiAmount,
-                      token.name
-                    );
-                    break;
+              if (transaction && transaction.meta) {
+                const { preTokenBalances, postTokenBalances } =
+                  transaction.meta;
+                if (preTokenBalances.length && postTokenBalances.length) {
+                  if (
+                    preTokenBalances[1].owner === WALLET_ADDRESS.SOL &&
+                    postTokenBalances[1].owner === WALLET_ADDRESS.SOL
+                  ) {
+                    for (const token of chain.tokens) {
+                      if (preTokenBalances[0].mint === token.address) {
+                        console.log(
+                          "--------------------------------------------------------------------"
+                        );
+                        console.log("ChainID:", chain.id, token.name);
+                        console.log("TxHASH =>", signature);
+                        console.log("FROM =>", preTokenBalances[0].owner);
+                        console.log(
+                          "VALUE =>",
+                          postTokenBalances[1].uiTokenAmount.uiAmount -
+                            preTokenBalances[1].uiTokenAmount.uiAmount,
+                          token.name
+                        );
+                        break;
+                      }
+                    }
                   }
                 }
               }
+              break;
             }
           }
       },
